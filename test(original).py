@@ -334,8 +334,8 @@ def handle_dialog(res, req):
             ]
 
         elif user.get_quizAuthor() is None:
-            QuizAuthor.randomBooks_and_Authors()
-            quiz_author = book_author, author_author, varianti = QuizAuthor.quizAuthor()
+            QuizAuthor().randomBooks_and_Authors()
+            quiz_author = book_author, author_author, varianti = QuizAuthor().quizAuthor()
             user.startedQuizAuthor(quizAuthor=quiz_author)
             res['response']['text'] = 'Назовите автора данной книги: ' + '\n' + book_author
             res['response']['buttons'] = [
@@ -358,7 +358,7 @@ def handle_dialog(res, req):
             ]
 
             answer = req['request']['command']
-            QuizAuthor.answer(answer=answer)
+            QuizAuthor().answer(answer=answer)
 
         elif user.get_quizAuthor():
             res['response']['text'] = 'Ваш результат: ' + user.get_quizAuthor().answer()
@@ -377,12 +377,12 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-            QuizAuthor.end_quiz()
+            QuizAuthor().end_quiz()
             user.startedQuizAuthor(None)
 
         elif user.get_quizGenre() is None:
-            QuizGenre.randomBook_and_Genre()
-            quiz_genre = book_genre, genre_genre, varianti_genre = QuizGenre.quizGenre()
+            QuizGenre().randomBook_and_Genre()
+            quiz_genre = book_genre, genre_genre, varianti_genre = QuizGenre().quizGenre()
             user.startedQuizGenre(quizGenre=quiz_genre)
             res['response']['text'] = 'Назовите жанр данной книги: ' + '\n' + book_genre
             res['response']['buttons'] = [
@@ -404,7 +404,7 @@ def handle_dialog(res, req):
                 }
             ]
             answer_genre = req['request']['command']
-            QuizGenre.answer(answer=answer_genre)
+            QuizGenre().answer(answer=answer_genre)
 
         elif user.get_quizGenre():
             res['response']['text'] = 'Ваш результат: ' + user.get_quizGenre().answer()
@@ -423,7 +423,7 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-            QuizGenre.end_quiz()
+            QuizGenre().end_quiz()
             user.startedQuizGenre(None)
 
         elif 'рецензия' in req['request']['nlu']['tokens']:
