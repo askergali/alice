@@ -121,10 +121,10 @@ class QuizAuthor:
 
 
 class Book:
-    def __init__(self, title, rating, desc, cover):
+    def __init__(self, title, rating, author, desc, cover):
         self.title = title
         self.rating = rating
-        # self.author = author
+        self.author = author
         self.desc = desc
         self.cover = cover
 
