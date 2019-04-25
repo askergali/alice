@@ -23,7 +23,7 @@ def randomBook_and_Genre():
     global questions_genres, answers_genres
 
     for i in range(5):
-        book_g = book_names[randint(0, len(book_names))]
+        book_g = book_names[randint(0, len(book_names)-1)]
         correctGenre = books_4genres[book_g]
         questions_genres.append(book_g)
         answers_genres.append(correctGenre)
@@ -84,7 +84,7 @@ class QuizGenre:
         genre = self.answers[self.currentQuestion]
         options = []
         while len(options) <= 3:
-            option = genres[randint(0, len(genres))]
+            option = genres[randint(0, len(genres)-1)]
             if option != genre:
                 options.append(option)
 
@@ -115,7 +115,7 @@ class QuizAuthor:
         author = self.answers[self.currentQuestion]
         choices = []
         while len(choices) <= 3:
-            choice = all_authors[randint(0, len(all_authors))]
+            choice = all_authors[randint(0, len(all_authors)-1)]
             if choice != author:
                 choices.append(choice)
 
