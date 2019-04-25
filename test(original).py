@@ -18,6 +18,14 @@ class User:
         else:
             return False
 
+    def startedQuizGenre(self, quizGenre):
+        self.quizGenre = quizGenre
+        self.isTakingQuizGenre = True
+
+    def startedQuizAuthor(self, quizAuthor):
+        self.quizAuthor = quizAuthor
+        self.isTakingQuizAuthor = True
+
     def get_name(self):
         return self.name
 
@@ -26,6 +34,90 @@ class User:
 
     def get_book(self):
         return self.book
+
+
+class QuizGenre:
+    def __init__(self, questions, answers):
+        self.questions = questions
+        self.answers = answers
+        self.currentQuestion = 0
+        self.totalScore = 0
+
+    def get_quizGenre(self):
+        global genres
+        book = self.questions[self.currentQuestion]
+        genre = self.answers[self.currentQuestion]
+        options = []
+        while len(options) <= 3:
+            option = genres[randint(0, len(genres))]
+            if option != genre:
+                options.append(option)
+
+        options.append(genre)
+        shuffled_genres = shuffle(options)
+        return book, genre, shuffled_genres
+
+    def randomBook_and_Genre(self):
+        global book_names, books_4genres
+
+        randomBooks_g = []
+        correctGenres = []
+        book_g = book_names[randint(0, len(book_names))]
+        correctGenre = books_4genres[book_g]
+        randomBooks_g.append(book_g)
+        correctGenres.append(correctGenre)
+        return randomBooks_g, correctGenres
+
+    def answer(self, answer):
+        if answer == self.answers[self.currentQuestion]:
+            self.totalScore += 1
+            self.currentQuestion += 1
+        else:
+            self.currentQuestion += 1
+
+    def end_quiz(self):
+        if self.currentQuestion == 5:
+            user.isTakingQuizGenre = False
+
+
+class QuizAuthor:
+    def __init__(self, questions, answers):
+        self.questions = questions
+        self.answers = answers
+        self.currentQuestion = 0
+        self.totalScore = 0
+
+    def get_quizAuthor(self):
+        global all_authors
+        book = self.questions[self.currentQuestion]
+        author = self.answers[self.currentQuestion]
+        choices = []
+        while len(choices) <= 3:
+            choice = all_authors[randint(0, len(all_authors))]
+            if choice != author:
+                choices.append(choice)
+
+        choices.append(author)
+        shuffled_authors = shuffle(choices)
+        return book, author, shuffled_authors
+
+    def randomBooks_and_Authors(self):
+        randomBooks = []
+        correctAnswers = []
+        book, author = random_book()
+        randomBooks.append(book)
+        correctAnswers.append(author)
+        return randomBooks, correctAnswers
+
+    def answer(self, answer):
+        if answer == self.answers[self.currentQuestion]:
+            self.totalScore += 1
+            self.currentQuestion += 1
+        else:
+            self.currentQuestion += 1
+
+    def end_quiz(self):
+        user.isTakingQuizAuthor = False
 
 
 class Book:
@@ -82,9 +174,10 @@ def get_description(book_name):
         response = requests.get(url, params=params)
         books_json = response.json()
 
+        author = books_json['items'][0]['volumeInfo']['authors'][0]
         description = books_json['items'][0]['volumeInfo']['description']
 
-        return description
+        return author, description
 
     except Exception as e:
         return e
@@ -120,11 +213,9 @@ books = []
 authors = []
 author_book = {}
 
-book_4authors = []
-new_b4a = []
 
-
-def get_books():
+def get_book_and_author():
+    global all_books, all_authors, author_book
     try:
 
         response = requests.get(
@@ -132,70 +223,24 @@ def get_books():
         books_json = response.json()
         for i in range(20):
             book = books_json['results'][i]['title']
-            books.append(book)
+            all_books.append(book)
 
-    except Exception as e:
-        return e
-
-    return books
-
-
-def get_authors():
-    try:
-
-        response = requests.get(
-            "https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?api-key=03GX5gN25mrINUZTbJV5Y4cXKPYU8f49")
-        books_json = response.json()
-        for i in range(20):
             author = books_json['results'][i]['author']
-            authors.append(author)
+            all_authors.append(author)
+
+            author_book[book] = author
 
     except Exception as e:
         return e
 
-    return authors
-
-
-def get_book_and_author():
-    try:
-
-        response = requests.get(
-            "https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json?api-key=03GX5gN25mrINUZTbJV5Y4cXKPYU8f49")
-        books_json = response.json()
-        for i in range(20):
-            author_book[books_json['results'][i]['title']] = books_json['results'][i]['author']
-
-    except Exception as e:
-        return e
-
-    return author_book
-
-
-def guess_author():
-    book = random_book()[0]
-
-    shuffle(authors)
-
-    for i in range(3):
-        book_4authors.append(authors[i])
-
-    book_4authors.append(author_book[book])
-
-    return book, book_4authors
-
-
-def new_list_of_authors():
-    new_b4a = sample(book_4authors, len(book_4authors))
-    return new_b4a
+    return all_books, all_authors, author_book
 
 
 def random_book():
-    shuffle(books)
-    return books[0], author_book[books[0]]
+    global all_books
+    shuffle(all_books)
+    return all_books[0], author_book[all_books[0]]
 
-
-get_books()
-get_authors()
 get_book_and_author()
 
 genres = ['Fiction', 'Action', 'Classic', 'Comic', 'Detective', 'Drama', 'Horror']
@@ -246,11 +291,10 @@ def handle_dialog(res, req):
         if user.get_name() is None:
             res['response']['text'] = 'Не расслышала имя. Повтори, пожалуйста'
         else:
-            # sessionStorage[user_id]['first_name'] = first_name
             user = User(user_id, get_first_name(req))
             res['response']['text'] = 'Приятно познакомиться, ' + user.get_name().title() \
-                                      + '. Я - Алиса. Я могу порекомендовать тебе книгу, дать рецензию на уже интересующую ' \
-                                        'или проверить твои знания в литературе!'
+                                      + '. Я - Алиса. Я могу порекомендовать тебе книгу, дать рецензию на уже ' \
+                                        'интересующую или проверить твои знания в литературе!'
             res['response']['buttons'] = [
                 {
                     'title': 'Рекомендация',
@@ -290,46 +334,10 @@ def handle_dialog(res, req):
             sessionStorage[user_id]['prev_answer'] = ""
 
             if req['request']['command'] == 'По авторам':
-
-                name, authors = guess_author()
-                new_authors = new_list_of_authors()
-
-                res['response']['text'] = 'Назовите автора этой книги:' + '\n' + name
-
-                res['response']['buttons'] = [
-                    {
-                        'title': new_authors[0],
-                        'hide': True
-                    },
-                    {
-                        'title': new_authors[1],
-                        'hide': True
-                    },
-                    {
-                        'title': new_authors[2],
-                        'hide': True
-                    },
-                    {
-                        'title': new_authors[3],
-                        'hide': True
-                    }
-                ]
-
-                if req['request']['command'] == authors[-1]:
-                    sessionStorage[user_id]['prev_answer'] = 'verno'
-
-                else:
-                    sessionStorage[user_id]['prev_answer'] = 'neverno'
+                res['response']['text'] = 'po avtoram'
 
             elif req['request']['command'] == 'По жанрам':
-                book_genre = book_names[randint(0, 7)]
-                res['response']['text'] = 'Назовите жанр этой книги:' + '\n' + book_genre
-
-                if req['request']['command'] == books_4genres[book_genre]:
-                    sessionStorage[user_id]['prev_answer'] = 'verno'
-
-                else:
-                    sessionStorage[user_id]['prev_answer'] = 'neverno'
+                res['response']['text'] = 'no zhanram'
 
             else:
                 res['response']['text'] = 'Не вредничай'
@@ -344,32 +352,21 @@ def handle_dialog(res, req):
                     }
                 ]
 
-        elif sessionStorage[user_id]['prev_answer'] == 'verno':
-
-            sessionStorage[user_id]['prev_answer'] = ''
-            res['response']['text'] = 'Правильно'
-
-        elif sessionStorage[user_id]['prev_answer'] == 'neverno':
-
-            sessionStorage[user_id]['prev_answer'] = ''
-            res['response']['text'] = 'Не расстраивайся'
-
         elif 'рецензия' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Напиши название книги (на английском языке)'
-            # sessionStorage[user_id]['prev_answer'] = 'Напиши название книги (на английском языке)'
+
         elif user.get_book() is None:
-            # sessionStorage[user_id]['prev_answer'] = ""
             book_name = req['request']['command']
 
             rating, name_book = get_rating(book_name)
-            description = get_description(book_name)
+            author_name_book, description = get_description(book_name)
             cover = get_cover(book_name)
 
-            book = Book(title=name_book, rating=rating, desc=description, cover=cover)
+            book = Book(title=name_book, rating=rating, author=author_name_book, desc=description, cover=cover)
 
             user.set_book(book)
 
-            res['response']['text'] = name_book + ':' + '\n' + 'Рейтинг - ' + str(
+            res['response']['text'] = name_book + ':' + '\n' + 'Автор - ' + author_name_book + '\n' + 'Рейтинг - ' + str(
                 rating) + '\n' + 'Описание - ' + description + '\n' + 'Хотите увидеть обложку?'
             res['response']['buttons'] = [
                 {
@@ -383,7 +380,7 @@ def handle_dialog(res, req):
             ]
         elif user.get_book():
             if 'да' in req['request']['nlu']['tokens']:
-                res['response']['text'] = 'Нажми на ссылку чтобы увидеть обложку'
+                res['response']['text'] = 'Перейди по ссылке чтоб посмотреть на обложку'
                 res['response']['buttons'] = [
                     {
                         'title': 'Обложка',
