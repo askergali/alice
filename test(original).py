@@ -76,8 +76,8 @@ class QuizGenre:
 
     def quizGenre(self):
         global genres
-        book = self.questions[self.currentQuestion]
-        genre = self.answers[self.currentQuestion]
+        book = self.questions[self.currentQuestion-1]
+        genre = self.answers[self.currentQuestion-1]
         options = []
         while len(options) <= 2:
             option = genres[randint(0, len(genres)-1)]
@@ -89,7 +89,7 @@ class QuizGenre:
         return book, genre, shuffled_genres
 
     def answer(self, answer):
-        if answer == self.answers[self.currentQuestion]:
+        if answer == self.answers[self.currentQuestion-1]:
             self.totalScore += 1
             self.currentQuestion += 1
         else:
@@ -109,8 +109,8 @@ class QuizAuthor:
 
     def quizAuthor(self):
         global all_authors
-        book = self.questions[self.currentQuestion]
-        author = self.answers[self.currentQuestion]
+        book = self.questions[self.currentQuestion-1]
+        author = self.answers[self.currentQuestion-1]
         choices = []
         while len(choices) <= 2:
             choice = all_authors[randint(0, len(all_authors)-1)]
@@ -122,7 +122,7 @@ class QuizAuthor:
         return book, author, shuffled_authors
 
     def answer(self, answer):
-        if answer == self.answers[self.currentQuestion]:
+        if answer == self.answers[self.currentQuestion-1]:
             self.totalScore += 1
         self.currentQuestion += 1
         return self.currentQuestion, self.totalScore
