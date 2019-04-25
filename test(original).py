@@ -47,6 +47,7 @@ class QuizGenre:
         self.totalScore = 0
 
     def get_quizGenre(self):
+        global genres
         book = self.questions[self.currentQuestion]
         genre = self.answers[self.currentQuestion]
         options = []
@@ -60,6 +61,8 @@ class QuizGenre:
         return book, genre, shuffled_genres
 
     def randomBook_and_Genre(self):
+        global book_names, books_4genres
+
         randomBooks_g = []
         correctGenres = []
         book_g = book_names[randint(0, len(book_names))]
@@ -88,6 +91,7 @@ class QuizAuthor:
         self.totalScore = 0
 
     def get_quizAuthor(self):
+        global all_authors
         book = self.questions[self.currentQuestion]
         author = self.answers[self.currentQuestion]
         choices = []
@@ -214,6 +218,7 @@ author_book = {}
 
 
 def get_book_and_author():
+    global all_books, all_authors, author_book
     try:
 
         response = requests.get(
@@ -235,6 +240,7 @@ def get_book_and_author():
 
 
 def random_book():
+    global all_books
     shuffle(all_books)
     return all_books[0], author_book[all_books[0]]
 
