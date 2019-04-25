@@ -318,6 +318,16 @@ def handle_dialog(res, req):
                 {
                     'title': 'Тест',
                     'hide': True
+                },
+                {
+                    'title': 'Google Books API',
+                    'url': 'https://developers.google.com/books/docs/overview',
+                    'hide': True
+                },
+                {
+                    'title': 'New York Times API',
+                    'url': 'https://developer.nytimes.com/docs/books-product/1/overview',
+                    'hide': True
                 }
             ]
     else:
@@ -485,7 +495,6 @@ def handle_dialog(res, req):
                         'hide': True
                     }
                 ]
-
             else:
                 res['response']['text'] = 'Что-то еще?'
                 res['response']['buttons'] = [
@@ -504,7 +513,7 @@ def handle_dialog(res, req):
                 ]
             user.set_book(None)
 
-        elif 'обложка' in req['request']['nlu']['tokens']:
+        elif 'обложка' or 'api' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Что-то еще?'
             res['response']['buttons'] = [
                 {
