@@ -5,12 +5,8 @@ import logging
 import json
 
 
-questions_authors, answers_authors = [], []
-questions_genres, answers_genres = [], []
-
-
 def randomBooks_and_Authors():
-    global questions_authors, answers_authors
+    questions_authors, answers_authors = [], []
     for i in range(5):
         book, author = random_book()
         questions_authors.append(book)
@@ -20,8 +16,8 @@ def randomBooks_and_Authors():
 
 def randomBook_and_Genre():
     global book_names, books_4genres
-    global questions_genres, answers_genres
 
+    questions_genres, answers_genres = [], []
     for i in range(5):
         book_g = book_names[randint(0, len(book_names)-1)]
         correctGenre = books_4genres[book_g]
@@ -83,7 +79,7 @@ class QuizGenre:
         book = self.questions[self.currentQuestion]
         genre = self.answers[self.currentQuestion]
         options = []
-        while len(options) <= 3:
+        while len(options) <= 2:
             option = genres[randint(0, len(genres)-1)]
             if option != genre:
                 options.append(option)
@@ -95,7 +91,9 @@ class QuizGenre:
     def answer(self, answer):
         if answer == self.answers[self.currentQuestion]:
             self.totalScore += 1
-        self.currentQuestion += 1
+            self.currentQuestion += 1
+        else:
+            self.currentQuestion += 1
         return self.currentQuestion, self.totalScore
 
     def end_quiz(self):
@@ -114,7 +112,7 @@ class QuizAuthor:
         book = self.questions[self.currentQuestion]
         author = self.answers[self.currentQuestion]
         choices = []
-        while len(choices) <= 3:
+        while len(choices) <= 2:
             choice = all_authors[randint(0, len(all_authors)-1)]
             if choice != author:
                 choices.append(choice)
@@ -287,8 +285,6 @@ def main():
 
 def handle_dialog(res, req):
     global user
-    global questions_authors, answers_authors
-    global questions_genres, answers_genres
 
     user_id = req['session']['user_id']
 
@@ -344,7 +340,7 @@ def handle_dialog(res, req):
             ]
 
         elif 'авторам' in req['request']['nlu']['tokens']:
-            randomBooks_and_Authors()
+            questions_authors, answers_authors = randomBooks_and_Authors()
             quiz_author = QuizAuthor(questions=questions_authors, answers=answers_authors)
             user.startedQuizAuthor(quizAuthor=quiz_author)
             user.isTakingQuizAuthor = True
@@ -372,8 +368,7 @@ def handle_dialog(res, req):
         elif user.isTakingQuizAuthor:
             answer = req['request']['command']
             current, total = user.quizAuthor.answer(answer=answer)
-            quiz_author = book_author, author_author, varianti = user.quizAuthor.quizAuthor()
-            user.startedQuizAuthor(quizAuthor=quiz_author)
+            book_author, author_author, varianti = user.quizAuthor.quizAuthor()
             if current < 5:
                 res['response']['text'] = 'Ваш нынешний результат: ' + str(total) + '/5' + '\n' + 'Назовите автора данной книги: ' + '\n' + book_author
                 res['response']['buttons'] = [
@@ -396,11 +391,11 @@ def handle_dialog(res, req):
                 ]
 
             else:
+                res['response']['text'] = 'Вы прошли тест на литературные знания.' + '\n' + 'Ваш результат: ' + str(total) + '/5'
                 user.isTakingQuizAuthor = False
-                questions_authors, answers_authors = [], []
 
         elif 'жанрам' in req['request']['nlu']['tokens']:
-            randomBook_and_Genre()
+            questions_genres, answers_genres = randomBook_and_Genre()
             quiz_genre = QuizGenre(questions=questions_genres, answers=answers_genres)
             user.startedQuizGenre(quizGenre=quiz_genre)
             user.isTakingQuizGenre = True
@@ -428,8 +423,7 @@ def handle_dialog(res, req):
         elif user.isTakingQuizGenre:
             answer_genre = req['request']['command']
             current_g, total_g = user.quizGenre.answer(answer=answer_genre)
-            quiz_genre = book_genre, genre_genre, varianti_genre = user.quizGenre.quizGenre()
-            user.startedQuizGenre(quizGenre=quiz_genre)
+            book_genre, genre_genre, varianti_genre = user.quizGenre.quizGenre()
             if current_g < 5:
                 res['response']['text'] = 'Ваш нынешний результат: ' + str(total_g) + '/5' + '\n' + 'Назовите жанр данной книги: ' + '\n' + book_genre
                 res['response']['buttons'] = [
@@ -452,6 +446,7 @@ def handle_dialog(res, req):
                 ]
 
             else:
+                res['response']['text'] = 'Вы прошли тест на литературные знания.' + '\n' + 'Ваш результат: ' + str(total_g) + '/5'
                 user.isTakingQuizGenre = False
 
         elif 'рецензия' in req['request']['nlu']['tokens']:
