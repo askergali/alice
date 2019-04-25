@@ -73,7 +73,7 @@ class User:
 
 class QuizGenre:
     def __init__(self, questions, answers):
-        self.questions_genres = questions
+        self.questions = questions
         self.answers = answers
         self.currentQuestion = 0
         self.totalScore = 0
@@ -453,7 +453,6 @@ def handle_dialog(res, req):
 
             else:
                 user.isTakingQuizGenre = False
-                questions_genres, answers_genres = [], []
 
         elif 'рецензия' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Напиши название книги (на английском языке)'
