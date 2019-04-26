@@ -37,7 +37,6 @@ class User:
         self.quizAuthor = None
 
     def is_logged(self):
-
         if self.name is not None:
             return True
         else:
@@ -348,7 +347,6 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-
         elif 'тест' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Ты решил пройти тест! По авторам или по жанрам?'
 
@@ -362,7 +360,6 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-
         elif 'авторам' in req['request']['nlu']['tokens']:
             questions_authors, answers_authors = randomBooks_and_Authors()
             quiz_author = QuizAuthor(questions=questions_authors, answers=answers_authors)
@@ -388,7 +385,6 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-
         elif user.isTakingQuizAuthor:
             answer = req['request']['command']
             current, total = user.quizAuthor.answer(answer=answer)
@@ -413,7 +409,6 @@ def handle_dialog(res, req):
                         'hide': True
                     }
                 ]
-
             else:
                 res['response']['text'] = 'Вы прошли тест на литературные знания.' + '\n' + 'Ваш результат: ' + str(total) + '/5'
                 res['response']['buttons'] = [
@@ -431,7 +426,6 @@ def handle_dialog(res, req):
                     }
                 ]
                 user.isTakingQuizAuthor = False
-
         elif 'жанрам' in req['request']['nlu']['tokens']:
             questions_genres, answers_genres = randomBook_and_Genre()
             quiz_genre = QuizGenre(questions=questions_genres, answers=answers_genres)
@@ -457,7 +451,6 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-
         elif user.isTakingQuizGenre:
             answer_genre = req['request']['command']
             current_g, total_g = user.quizGenre.answer(answer=answer_genre)
@@ -482,7 +475,6 @@ def handle_dialog(res, req):
                         'hide': True
                     }
                 ]
-
             else:
                 res['response']['text'] = 'Вы прошли тест на литературные знания.' + '\n' + 'Ваш результат: ' + str(total_g) + '/5'
                 res['response']['buttons'] = [
@@ -500,10 +492,8 @@ def handle_dialog(res, req):
                     }
                 ]
                 user.isTakingQuizGenre = False
-
         elif 'рецензия' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Напиши название книги (на английском языке)'
-
         elif 'api' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Что-то еще?'
             res['response']['buttons'] = [
@@ -520,7 +510,6 @@ def handle_dialog(res, req):
                     'hide': True
                 }
             ]
-
         elif 'обложка' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Что-то еще?'
             res['response']['buttons'] = [
@@ -596,7 +585,6 @@ def handle_dialog(res, req):
                     }
                 ]
             user.set_book(None)
-
         else:
             res['response']['text'] = 'Ты должен выбрать!'
             res['response']['buttons'] = [
