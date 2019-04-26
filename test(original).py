@@ -170,7 +170,7 @@ def get_rating(book_name):
         return rating, name_book
 
     except Exception as e:
-        return e
+        return None, e
 
 
 def get_description(book_name):
@@ -191,10 +191,10 @@ def get_description(book_name):
         return author, description
 
     except Exception as e:
-        return e
+        return e, None
 
 
-def get_cover(book_name='harry potter and chamber of secrets'):
+def get_cover(book_name):
     try:
         url = "https://www.googleapis.com/books/v1/volumes"
 
@@ -210,8 +210,8 @@ def get_cover(book_name='harry potter and chamber of secrets'):
 
         return cover
 
-    except Exception as e:
-        return e
+    except Exception:
+        return None
 
 
 def get_first_name(req):
@@ -504,12 +504,54 @@ def handle_dialog(res, req):
         elif 'рецензия' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Напиши название книги (на английском языке)'
 
+        elif 'api' in req['request']['nlu']['tokens']:
+            res['response']['text'] = 'Что-то еще?'
+            res['response']['buttons'] = [
+                {
+                    'title': 'Рекомендация',
+                    'hide': True
+                },
+                {
+                    'title': 'Рецензия',
+                    'hide': True
+                },
+                {
+                    'title': 'Тест',
+                    'hide': True
+                }
+            ]
+
+        elif 'обложка' in req['request']['nlu']['tokens']:
+            res['response']['text'] = 'Что-то еще?'
+            res['response']['buttons'] = [
+                {
+                    'title': 'Рекомендация',
+                    'hide': True
+                },
+                {
+                    'title': 'Рецензия',
+                    'hide': True
+                },
+                {
+                    'title': 'Тест',
+                    'hide': True
+                }
+            ]
         elif user.get_book() is None:
             book_name = req['request']['command']
 
             rating, name_book = get_rating(book_name)
+            if rating is None:
+                res['response']['text'] = "Блин ты лох(rating, name_book)" + str(name_book)
+                return
             author_name_book, description = get_description(book_name)
+            if description is None:
+                res['response']['text'] = "Блин ты лох(author_name_book, description)" + str(author_name_book)
+                return
             cover = get_cover(book_name)
+            if cover is None:
+                res['response']['text'] = "Блин ты лох(cover)"
+                return
 
             book = Book(title=name_book, rating=rating, author=author_name_book, desc=description, cover=cover)
 
@@ -555,22 +597,6 @@ def handle_dialog(res, req):
                 ]
             user.set_book(None)
 
-        elif 'обложка' or 'api' in req['request']['nlu']['tokens']:
-            res['response']['text'] = 'Что-то еще?'
-            res['response']['buttons'] = [
-                {
-                    'title': 'Рекомендация',
-                    'hide': True
-                },
-                {
-                    'title': 'Рецензия',
-                    'hide': True
-                },
-                {
-                    'title': 'Тест',
-                    'hide': True
-                }
-            ]
         else:
             res['response']['text'] = 'Ты должен выбрать!'
             res['response']['buttons'] = [
