@@ -542,15 +542,15 @@ def handle_dialog(res, req):
 
             rating, name_book = get_rating(book_name)
             if rating is None:
-                res['response']['text'] = "Блин ты лох(rating, name_book)" + str(name_book)
+                res['response']['text'] = 'Недостаточно данных'
                 return
             author_name_book, description = get_description(book_name)
             if description is None:
-                res['response']['text'] = "Блин ты лох(author_name_book, description)" + str(author_name_book)
+                res['response']['text'] = 'Недостаточно данных'
                 return
             cover = get_cover(book_name)
             if cover is None:
-                res['response']['text'] = "Блин ты лох(cover)"
+                res['response']['text'] = 'Недостаточно данных'
                 return
 
             book = Book(title=name_book, rating=rating, author=author_name_book, desc=description, cover=cover)
