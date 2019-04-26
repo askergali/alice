@@ -320,12 +320,10 @@ def handle_dialog(res, req):
                     'hide': True
                 },
                 {
-                    'title': 'Google Books API',
                     'url': 'https://developers.google.com/books/docs/overview',
                     'hide': True
                 },
                 {
-                    'title': 'New York Times API',
                     'url': 'https://developer.nytimes.com/docs/books-product/1/overview',
                     'hide': True
                 }
@@ -490,7 +488,6 @@ def handle_dialog(res, req):
                 res['response']['text'] = 'Перейди по ссылке чтоб посмотреть на обложку'
                 res['response']['buttons'] = [
                     {
-                        'title': 'Обложка',
                         'url': user.get_book().get_cover(),
                         'hide': True
                     }
