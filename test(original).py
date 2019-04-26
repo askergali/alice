@@ -320,10 +320,12 @@ def handle_dialog(res, req):
                     'hide': True
                 },
                 {
+                    'title': 'Google Books API',
                     'url': 'https://developers.google.com/books/docs/overview',
                     'hide': True
                 },
                 {
+                    'title': 'New York Times API',
                     'url': 'https://developer.nytimes.com/docs/books-product/1/overview',
                     'hide': True
                 }
@@ -332,6 +334,20 @@ def handle_dialog(res, req):
         if 'рекомендация' in req['request']['nlu']['tokens']:
             book, author = random_book()
             res['response']['text'] = 'Советую почитать ' + book + ' от автора ' + author + ', ' + user.get_name().title()
+            res['response']['buttons'] = [
+                {
+                    'title': 'Рекомендация',
+                    'hide': True
+                },
+                {
+                    'title': 'Рецензия',
+                    'hide': True
+                },
+                {
+                    'title': 'Тест',
+                    'hide': True
+                }
+            ]
 
         elif 'тест' in req['request']['nlu']['tokens']:
             res['response']['text'] = 'Ты решил пройти тест! По авторам или по жанрам?'
@@ -400,6 +416,20 @@ def handle_dialog(res, req):
 
             else:
                 res['response']['text'] = 'Вы прошли тест на литературные знания.' + '\n' + 'Ваш результат: ' + str(total) + '/5'
+                res['response']['buttons'] = [
+                    {
+                        'title': 'Рекомендация',
+                        'hide': True
+                    },
+                    {
+                        'title': 'Рецензия',
+                        'hide': True
+                    },
+                    {
+                        'title': 'Тест',
+                        'hide': True
+                    }
+                ]
                 user.isTakingQuizAuthor = False
 
         elif 'жанрам' in req['request']['nlu']['tokens']:
@@ -455,6 +485,20 @@ def handle_dialog(res, req):
 
             else:
                 res['response']['text'] = 'Вы прошли тест на литературные знания.' + '\n' + 'Ваш результат: ' + str(total_g) + '/5'
+                res['response']['buttons'] = [
+                    {
+                        'title': 'Рекомендация',
+                        'hide': True
+                    },
+                    {
+                        'title': 'Рецензия',
+                        'hide': True
+                    },
+                    {
+                        'title': 'Тест',
+                        'hide': True
+                    }
+                ]
                 user.isTakingQuizGenre = False
 
         elif 'рецензия' in req['request']['nlu']['tokens']:
@@ -488,6 +532,7 @@ def handle_dialog(res, req):
                 res['response']['text'] = 'Перейди по ссылке чтоб посмотреть на обложку'
                 res['response']['buttons'] = [
                     {
+                        'title': 'Обложка',
                         'url': user.get_book().get_cover(),
                         'hide': True
                     }
